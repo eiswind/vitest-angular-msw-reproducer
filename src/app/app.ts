@@ -1,12 +1,22 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {rxResource} from '@angular/core/rxjs-interop';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('hello-msw');
+
+  httpClient = inject(HttpClient)
+  protected readonly title = rxResource({
+    stream: ()=> this.httpClient.get<User>('/api/user')
+
+  });
+}
+
+
+interface User {
+  name:string;
 }

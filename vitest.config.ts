@@ -1,24 +1,18 @@
-import { defineConfig } from 'vitest/config';
+/// <reference types="vitest" />
+import { defineConfig } from 'vite';
 
-export default defineConfig({
+import angular from '@analogjs/vite-plugin-angular';
+
+export default defineConfig(({ mode }) => ({
+  plugins: [angular()],
   test: {
-    root: './',
     globals: true,
-    setupFiles: ['src/test-setup.ts'],
+    setupFiles: ['src/test-setup.ts',"src/msw-setup.ts"],
     environment: 'jsdom',
-    watch: false,
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
-    coverage: {
-      enabled: false,
-      excludeAfterRemap: true
-    }
   },
-  plugins: [
-    {
-      name: 'angular-coverage-exclude',
-      configureVitest(context) {
-        context.project.config.coverage.exclude = ['**/*.{test,spec}.?(c|m)ts'];
-      }
-    }
-  ]
-});
+  define: {
+    'import.meta.vitest': mode !== 'production',
+  },
+}));
